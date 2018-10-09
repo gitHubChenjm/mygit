@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.UserRoleMapper">
+ 	<resultMap id="BaseResult" type="UserRole"  >
+ 		<association property="user" javaType="User" column="user_id" select="findUser">
+ 			<id column="id" property="id"/>
+ 			<result column="account" property="account"/>
+ 			<result column="tel" property="tel"/>
+ 			<result column="head" property="head"/>
+ 			<result column="password" property="password"/>
+ 		</association>
+ 		<association property="role" javaType="Role" column="role_id" select="findRole" >
+ 			<id column="role_id" property="roleId"/>
+ 			<result column="role_name" property="roleName"/>
+ 		</association>
+ 	</resultMap>
+ 	
+ 	<select id="findUser" resultType="User">
+ 		select * from user where id = #{userId}
+ 	</select>
+ 	<select id="findRole" resultType="Role">
+ 		select role_id roleId,role_name roleName from role where role_id = #{roleId}
+ 	</select>
+ 	
+ 	<select id="findById" resultMap="BaseResult">
+ 		select * from user_role
+ 		where user_id = #{user_id}
+ 	</select>
+ 	
+ 	<select id="findByUserRoleIdList" resultMap="BaseResult">
+ 		select * from user_role
+ 		<foreach collection="list" open="where user_id in (" item="item" separator="," close=")">
+ 			#{item}
+ 		</foreach>
+ 	</select>
+ 	
+ 	<update id="editUserRoles" >
+ 		update user_role
+ 		set role_id =
+ 		<foreach collection="list" item="item" index="index" open="case user_id" close="end" separator=" ">
+  	       when #{item.user.id} then #{item.role.roleId}  
+  	   </foreach>
+  	   where user_id in
+  	   <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+  	       #{item.user.id}
+  	   </foreach>
+ 	</update>
+ 	
+ 	<insert id="addUserRoles">
+ 		insert into user_role
+ 		<foreach collection="list" open="values" item="item" separator=",">
+ 			(#{item.user.id},#{item.role.roleId})
+ 		</foreach>
+ 	</insert>
+</mapper>

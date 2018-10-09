@@ -1,0 +1,14 @@
+<body>
+<div id="item">
+</div>
+</body>
+<script src="statics/libs/jquery-1.7.2.js"></script>
+<script>
+var str = "'id':'ddd','name' : 'cjm'";
+var str1 = "{'list' : {'id':'ddd','name' : 'cjm'}}";
+var str2 = "{'list' : [{'id' : 'ddd' ,'name' : 'cjm'},{'id':'ccc' , 'name' : 'dlq'}]}";
+var result = eval( '(' + str + ')');
+console.log(result);
+console.log(result.list.id)
+//$("#item").html(result.id);
+</script>

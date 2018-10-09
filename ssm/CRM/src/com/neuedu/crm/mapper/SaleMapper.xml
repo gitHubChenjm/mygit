@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.SaleMapper">
+
+
+  <resultMap id="SaleMap" type="Sale">
+    <id column="sale_id" jdbcType="INTEGER" property="saleId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="probability" jdbcType="DOUBLE" property="probability" />
+    <result column="contacts" jdbcType="VARCHAR" property="contacts" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="assign_date" jdbcType="DATE" property="assignDate" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <association property="createId" column="create_id" javaType="User">
+   			<id column="id" property="id" />
+   			<result column="account" property="account" />
+   	</association>
+   	<association property="dealId" column="deal_id" javaType="User">
+   			<id column="id" property="id" />
+   			<result column="account" property="account" />
+   	</association>
+  </resultMap>
+  
+  <!-- 创建视图代码
+  	create view sale_info as
+	select s.*,u1.account as create_man,u2.account as deal_man from sale s left join user u1 on s.create_id=u1.id left join user u2 on s.deal_id = u2.id;
+   -->
+   
+   <!-- 批量删除 -->
+   <delete id="deleteByIdList" parameterType="int">
+		delete from sale where sale_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+	        #{item}
+	  	</foreach>
+	</delete>
+  
+  <select id="findAll" resultMap="SaleMap">
+    select s.sale_id,s.create_id createId,s.deal_id dealId,createid.account,dealid.account from sale s left join user createid on s.create_id=createid.id left join user dealid on s.deal_id = dealid.id
+  </select>
+  
+  <select id="findById" parameterType="int" resultMap="SaleMap">
+  	select * from sale s,user u1,user u2 where s.create_id = u1.id and s.deal_id = u2.id and s.sale_id = #{saleId}
+  </select>
+  
+  <insert id="addSale" parameterType="Sale">
+  	insert into sale
+  		values(#{saleId},#{customerName},#{summary},#{source},#{probability},#{contacts},
+  		#{tel},#{description},#{createId.id},now(),#{status},null,null,0)
+  </insert>
+  
+  <delete id="deleteById" parameterType="int">
+  	delete from sale where sale_id = #{saleId}
+  </delete>
+  
+  <update id="editSale" parameterType="Sale">
+  	update sale
+		<set>
+			<if test="customerName != null">
+				customer_name = #{customerName},
+			</if>
+			<if test="summary != null">
+				summary = #{summary},
+			</if>
+			<if test="source != null">
+				source = #{source},
+			</if>
+			<if test="probability != null">
+				probability = #{probability},
+			</if>
+			<if test="contacts != null">
+				contacts = #{contacts},
+			</if>
+			<if test="tel != null">
+				tel = #{tel},
+			</if>
+			<if test="description != null">
+				description = #{description},
+			</if>
+			<if test="state != null">
+				state = #{state}
+			</if>
+		</set>
+		where sale_id = #{saleId}
+  </update>
+  
+  
+ <!-- 指派或者更改负责人 ,时间固定为指派时或更改时的时间-->
+ 	<update id="updateDealUser" parameterType="Sale">
+		update sale
+		<set>
+			<if test="dealId != null">deal_id = #{dealId.id}</if>
+		</set>
+		,assign_date = now(),status = 1 where sale_id = #{saleId}
+ 	</update>
+ 	
+<!-- 更改指派状态和插入指派时间 -->
+  	<update id="updateStatus" parameterType="Sale">
+		update sale set assign_date = now(),status = 1 where sale_id = #{saleId}
+ 	</update>
+  
+<!--   多条件模糊查询      -->
+	
+	<select id="findByExample" parameterType="Sale" resultMap="SaleMap">
+		select * from sale s,user u1,user u2
+		<where>
+			s.create_id = u1.id and deal_id = u2.id
+			<if test="saleId != null">
+				and sale_id like concat(concat("%",#{saleId}),"%")
+			</if>
+			<if test="customerName != null">
+				and customer_name like concat(concat("%",#{customerName}),"%")
+			</if>
+			<if test="source != null">
+				and source = #{source}
+			</if>			
+			<if test="probability != null">
+				and probability = #{probability}
+			</if>
+			<if test="contacts != null">
+				and contacts = #{contacts}
+			</if>
+			<if test="tel != null">
+				and tel like concat(concat("%",#{tel}),"%")
+			</if>
+			<if test="description != null">
+				and description like concat(concat("%",#{description}),"%")
+			</if>
+			<if test="createId != null">
+				and create_id = #{createId.id}
+			</if>
+			<if test="createDate != null">
+				and create_date <![CDATA[<]]> #{createDate}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+			<if test="dealId != null">
+				and deal_id = #{dealId.id}
+			</if>
+			<if test="assignDate != null">
+				and assign_date <![CDATA[<]]> #{assignDate}
+			</if>
+			<if test="state != null">
+				and state = #{state}
+			</if>			
+						
+		</where>
+		
+	</select>
+
+  
+  
+</mapper>

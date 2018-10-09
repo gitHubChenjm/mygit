@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.CommunicateMapper">
+
+	<resultMap id="BaseResultMap" type="Communicate">
+		<id column="communicate_id" jdbcType="INTEGER" property="communicateId" />
+		<!-- <result column="customer_id" jdbcType="INTEGER" property="customerId" /> -->
+		<result column="dates" jdbcType="DATE" property="dates" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="general" jdbcType="VARCHAR" property="general" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="detail" jdbcType="VARCHAR" property="detail" />
+		<result column="file" jdbcType="VARCHAR" property="file" />
+		<association property="customer" column="customer_id"
+			javaType="Customer" select="findCustomer">
+			<id column="customer_id" property="customerId" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+	
+	<select id="findCustomer" parameterType="int" resultType="Customer">
+	    select * 
+	    from customer 
+	    where customer_id=#{customerId}
+	</select>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from communicate
+	</select>
+
+	<select id="findById" parameterType="INTEGER" resultMap="BaseResultMap">
+		select * from communicate
+		<where>
+			<if test="_parameter != null">
+				communicate_id=#{communicateId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByCustomerId" parameterType="int" resultMap="BaseResultMap">
+		select * from communicate
+		<where>
+			<if test="_parameter != null">
+				customer_id=#{customerId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findByExample" parameterType="Communicate" resultMap="BaseResultMap">
+		select * from communicate
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="communicateId !=null and communicateId != 0">
+				communicate_id=#{communicateId,jdbcType=INTEGER}
+			</if>
+			<if test="customer != null and customer.customerId !=null and customer.customerId != 0">
+				and customer_id=#{customer.customerId,jdbcType=INTEGER}
+			</if>
+			<if test="dates !=null">
+				and dates=#{dates}
+			</if>
+			<if test="address != null">
+				and address like concat(concat("%",#{address,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="general != null">
+				and general like concat(concat("%",#{general,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="remark != null">
+				and remark like concat(concat("%",#{remark,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="detail != null">
+				and detail like concat(concat("%",#{detail,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="file != null">
+				and file=#{file,jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</select>
+
+	<update id="editCommunicate" parameterType="Communicate">
+		update communicate
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="customer != null and customer.customerId !=null and customer.customerId != 0">
+				customer_id=#{customer.customerId},
+			</if>
+			<if test="dates !=null">
+				dates=#{dates},
+			</if>
+			<if test="address != null">
+				address=#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="general != null">
+				general=#{general,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark=#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="detail != null">
+				detail=#{detail,jdbcType=VARCHAR},
+			</if>
+			<if test="file != null">
+				file=#{file,jdbcType=VARCHAR},
+			</if>
+		</trim>
+		where communicate_id = #{communicateId}
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from communicate
+		where communicate_id = #{communicateId,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="addCommunicate" parameterType="Communicate">
+		insert into
+		communicate (communicate_id, customer_id, dates,
+		address, general,
+		remark,
+		detail, file)
+		values (0,
+		#{customer.customerId},
+		#{dates,jdbcType=DATE},
+		#{address,jdbcType=VARCHAR}, #{general,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{detail,jdbcType=VARCHAR},
+		#{file,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findByPager" parameterType="Pager"
+		resultMap="BaseResultMap">
+		select * from communicate where 1=1
+		<if test="param != null and param.communicateId != null">
+			and communicate_id = #{param.communicateId}
+		</if>
+		<if test="param != null and param.customer != null and param.customer.customerId != null">
+			and customer_id = #{param.customer.customerId}
+		</if>
+		<!-- <if test="param != null and param.dates != null">
+			and dates like concat(concat("%",#{param.dates}),"%")
+		</if> -->
+		<if test="param != null and param.address != null and param.address != &quot;&quot;">
+			and address like concat(concat("%",#{param.address}),"%")
+		</if>
+		<if test="param != null and param.general != null and  param.general != &quot;&quot;">
+			and general like concat(concat("%",#{param.general}),"%")
+		</if>
+		<if test="param != null and param.remark != null and param.remark != &quot;&quot;">
+			and remark like concat(concat("%",#{param.remark}),"%")
+		</if>
+		<if test="param != null and param.detail != null and param.detail != &quot;&quot;">
+			and detail like concat(concat("%",#{param.detail}),"%")
+		</if>
+		<if test="param != null and param.file != null and param.file != &quot;&quot;">
+			and file like concat(concat("%",#{param.file}),"%")
+		</if>
+		<choose>
+			<when test="param != null and param.startCreateDate != null">
+				and dates between #{param.startCreateDate}
+			</when>
+			<otherwise>
+				and dates between '0000-00-00'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="param != null and param.endCreateDate != null">
+				and #{param.endCreateDate}
+			</when>
+			<otherwise>
+				and now()
+			</otherwise>
+		</choose>
+		limit #{startIndex},#{pageSize}
+	</select>
+
+	<select id="countForPager" parameterType="Pager"
+		resultType="int">
+		select count(communicate_id) from communicate where 1=1
+		<if test="param != null and param.communicateId != null">
+			and communicate_id = #{param.communicateId}
+		</if>
+		<if test="param != null and param.customer != null and param.customer.customerId != null">
+			and customer_id = #{param.customer.customerId}
+		</if>
+		<!-- <if test="param != null and param.dates != null">
+			and dates like concat(concat("%",#{param.dates}),"%")
+		</if> -->
+		<if test="param != null and param.address != null and param.address != &quot;&quot;">
+			and address like concat(concat("%",#{param.address}),"%")
+		</if>
+		<if test="param != null and param.general != null and  param.general != &quot;&quot;">
+			and general like concat(concat("%",#{param.general}),"%")
+		</if>
+		<if test="param != null and param.remark != null and param.remark != &quot;&quot;">
+			and remark like concat(concat("%",#{param.remark}),"%")
+		</if>
+		<if test="param != null and param.detail != null and param.detail != &quot;&quot;">
+			and detail like concat(concat("%",#{param.detail}),"%")
+		</if>
+		<if test="param != null and param.file != null and param.file != &quot;&quot;">
+			and file like concat(concat("%",#{param.file}),"%")
+		</if>
+		<choose>
+			<when test="param != null and param.startCreateDate != null">
+				and dates between #{param.startCreateDate}
+			</when>
+			<otherwise>
+				and dates between '0000-00-00'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="param != null and param.endCreateDate != null">
+				and #{param.endCreateDate}
+			</when>
+			<otherwise>
+				and now()
+			</otherwise>
+		</choose>
+	</select>
+	
+	<delete id="deleteByCommunicateList">
+		delete from communicate
+		where communicate_id in
+		<foreach collection="array" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

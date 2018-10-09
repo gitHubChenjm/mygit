@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- 整合spring + mybatis时，使用了注解配置，需要配置组件扫描器，使用spring加载/配置注解代码 -->
+	<context:component-scan base-package="com.neuedu.crm.service" />
+	<!-- 扫描切面 -->
+	<context:component-scan base-package="com.neuedu.crm.aop"/>
+	
+	<!-- 整合数据库连接池，后续需要由spring进行数据库事务管理，故需要由spring统一管理数据库连接 -->
+	<context:property-placeholder location="classpath:db_config.properties"/>
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${url}"></property>
+		<property name="username" value="${user}"></property>
+		<property name="password" value="${password}"></property>
+	</bean>
+	<!-- 整合spring + mybatis的数据源 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- mybatis改用spring提供的数据源,mybatis使用spring提供的数据源后可以删除配置文件数据源的设置（切换数据源） -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 引用mybatis全局配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	
+	<!-- mapper时mybatis的组件，需要由mybatis提供的整合类进行扫描 -->
+	<bean name="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.neuedu.crm.mapper"></property>
+	</bean>
+
+
+</beans>

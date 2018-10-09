@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.OrderitemMapper">
+
+	<resultMap id="BaseResultMap" type="com.neuedu.crm.bean.Orderitem">
+		<id column="orderitem_id" jdbcType="INTEGER" property="orderitemId" />
+		<!-- <result column="order_id" jdbcType="INTEGER" property="orderId" /> -->
+		<!-- <result column="product_id" jdbcType="INTEGER" property="productId" 
+			/> -->
+		<result column="count" jdbcType="INTEGER" property="count" />
+		<result column="total" jdbcType="DOUBLE" property="total" />
+		<association property="order" column="order_id" javaType="Orders" select="findOrders">
+			<id column="order_id" property="orderId" />
+			<result column="address" property="address" />
+			<result column="date" property="date" />
+			<result column="state" property="state" />
+			<association property="customer" column="customer_id"
+				javaType="Customer" select="findCustomer">
+				<id column="customer_id" property="customerId" />
+				<result column="name" property="name" />
+			</association>
+		</association>
+		<association property="product" column="product_id"
+			javaType="Product" select="findProduct">
+			<id column="product_id" property="productId" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+	
+	<select id="findOrders" parameterType="int" resultType="Orders">
+		select
+		*
+		from orders
+		where order_id=#{orderId}
+	</select>
+	
+	<select id="findCustomer" parameterType="int" resultType="Customer">
+		select
+		*
+		from customer
+		where customer_id=#{customerId}
+	</select>
+	
+	<select id="findProduct" parameterType="int" resultType="Product">
+		select
+		*
+		from product
+		where product_id=#{productId}
+	</select>
+	
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from orderitem
+	</select>
+
+	<select id="findById" parameterType="INTEGER" resultMap="BaseResultMap">
+		select * from orderitem
+		<where>
+			<if test="_parameter != null">
+				orderitem_id = #{orderitemId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByOrderId" parameterType="INTEGER" resultMap="BaseResultMap">
+		select * from orderitem
+		<where>
+			<if test="_parameter != null">
+				order_id = #{order.orderId}
+			</if>
+		</where>
+	</select>
+	
+	<update id="editOrder" parameterType="Orderitem">
+		update orderitem
+		<set>
+			<if test="order != null and order.orderId != 0">
+				order_id = #{order.orderId},
+			</if>
+			<if test="product != null and product.productId != 0">
+				product_id = #{product.productId},
+			</if>
+			<if test="count != null and count != 0">
+				count = #{count},
+			</if>
+			<if test="total != null">
+				total = #{total},
+			</if>
+		</set>
+		where orderitem_id = #{orderitemId}
+	</update>
+	
+	<insert id="addOrderitem" parameterType="Orderitem">
+		insert into orderitem (orderitem_id, order_id, product_id,
+		count, total)
+		values (0, #{order.orderId},
+		#{product.productId},
+		#{count,jdbcType=INTEGER}, #{total,jdbcType=DOUBLE})
+	</insert>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from orderitem
+		where
+		orderitem_id = #{orderitemId,jdbcType=INTEGER}
+	</delete>
+	
+	<sql id="Base_Column_List">
+		orderitem_id, order_id, product_id, count, total
+	</sql>
+	
+	<select id="findByExample" parameterType="Orderitem" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from orderitem
+		<where>
+			<if test="order != null and order.orderId != 0">
+				order_id = #{order.orderId}
+			</if>
+			<if test="product != null and product.productId != 0">
+				product_id = #{product.productId}
+			</if>
+			<if test="account != null and account != 0">
+				count = #{count}
+			</if>
+			<if test="total != null">
+				total = #{total}
+			</if>
+		</where>
+	</select>
+
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap">
+		select * from orderitem where 1=1
+		<if test="param != null and param.order != null and param.order.orderId != null">
+			and order_id = #{param.order.orderId}
+		</if>
+		<if test="param != null and param.product != null and param.product.productId != null">
+			and product_id = #{param.product.productId}
+		</if>
+		<if test="param != null and param.count != null">
+			and count = #{param.count}
+		</if>
+		<if test="param != null and param.total != null">
+			and total = #{param.total}
+		</if>
+		limit #{startIndex},#{pageSize}
+	</select>
+
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(orderitem_id) from orderitem where 1=1
+		<if test="param != null and param.order != null and param.order.orderId != null">
+			and order_id = #{param.order.orderId}
+		</if>
+		<if test="param != null and param.product != null and param.product.productId != null">
+			and product_id = #{param.product.productId}
+		</if>
+		<if test="param != null and param.count != null">
+			and count = #{param.count}
+		</if>
+		<if test="param != null and param.total != null">
+			and total = #{param.total}
+		</if>
+	</select>
+
+</mapper>

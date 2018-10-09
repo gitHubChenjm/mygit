@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.WordBookMapper">
+
+	<!-- 查找所有分类 -->
+	<select id="findAllCategory" resultType="WordBook">
+		select * from wordbook where category = 0
+	</select>
+	
+	<select id="findAll" resultType="WordBook">
+		select * from wordbook
+	</select>
+	
+  	<select id="findById" parameterType="int" resultType="WordBook">
+  		select * from wordbook where id = #{id}
+  	</select>
+  	
+  	<!-- 查找一个分类下的所有数据 -->
+  	<select id="findWordBookByCategory" parameterType="int" resultType="WordBook">
+  		select * from wordbook where category = #{category}
+  	</select>
+  	
+  	<!-- 查找一个分类的信息 -->
+  	<select id="findOneCategory" parameterType="int" resultType="WordBook">
+		select * from wordbook where category = 0 and value = #{category}
+	</select>
+	
+	<!-- 多条件分页查询		查总页数 -->	
+	<select id="countForPagerWithCond" parameterType="Pager" resultType="int">
+		select count(id) from wordbook
+		<where>
+			<if test="param!=null and param.category!=null">category=#{param.category}</if>			
+			<if test="param!=null and param.value!=null">and value like "%"#{param.value}"%"</if>
+			<if test="param!=null and param.editable!=null">and editable like "%"#{param.editable}"%"</if>	
+		</where>
+	</select>
+	
+	<select id="findByPagerWithCond" parameterType="Pager" resultType="WordBook">
+		select * from wordbook 
+		<where>
+			<if test="param!=null and param.category!=null">category=#{param.category}</if>			
+			<if test="param!=null and param.value!=null">and value like "%"#{param.value}"%"</if>
+			<if test="param!=null and param.editable!=null">and editable like "%"#{param.editable}"%"</if>		
+		</where>
+		limit #{startIndex},#{pageSize}
+	</select>
+	
+	<insert id="insert" parameterType="WordBook">
+		insert into wordbook values(0,#{category},#{title},#{value},#{editable})
+	</insert>
+	
+	<insert id="insertCategory" parameterType="WordBook">
+		insert into wordbook values(0,0,#{title},#{value},1)
+	</insert>
+	
+	<!-- 删除一条数据 -->
+	<delete id="deleteById" parameterType="int">
+  		delete from wordbook where id = #{id}
+  	</delete>
+  	
+  	<!-- 删除一个分类信息,未删除其下的数据 -->
+  	<delete id="deleteCategory" parameterType="int">
+  		delete from wordbook where category = 0 and value = #{category}
+  	</delete>
+  	
+  	<!-- 删除一个分类下的所有数据 -->
+  	<delete id="deleteByCategory" parameterType="int">
+  		delete from wordbook where category = #{category}
+  	</delete>
+  	
+  	<!-- 仅仅修改标记分类信息的一条记录,该分类下的数据的分类信息未修改 -->
+  	<update id="updateCategory" parameterType="WordBook">
+  		update wordbook
+		<set>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="editable != null">
+				editable = #{editable}
+			</if>
+		</set>
+		where id = #{id}
+  	</update>
+  	
+  	<!-- 要修改数据的分类信息 -->
+  	<update id="updateByCategory" parameterType="WordBook">
+  		update wordbook
+		<set>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="editable != null">
+				editable = #{editable}
+			</if>
+		</set>
+		where category = #{category}
+  	</update>
+  	
+  	<!-- 修改基础数据值 -->
+  	<update id="update" parameterType="WordBook">
+  		update wordbook
+		<set>
+			<if test="category != null">
+				category = #{category},
+			</if>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="value != null">
+				value = #{value},
+			</if>
+			<if test="editable != null">
+				editable = #{editable}
+			</if>
+		</set>
+		where id = #{id}
+  	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+</mapper>

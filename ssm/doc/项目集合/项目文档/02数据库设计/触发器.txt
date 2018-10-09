@@ -1,0 +1,69 @@
+CREATE TRIGGER update_on_sale
+AFTER update ON sale
+FOR EACH ROW
+BEGIN
+	if (new.status=1) then
+		insert into customer(`customer_id`,`name`,`contacts`,`tel`,`change`) values (0,new.customer_name,new.contacts,new.tel,0);
+	end if;
+END;
+
+查询星期几：
+select dayname(now());
+查询小时：
+select hour(now());
+查询现在：
+select now();
+
+参考网址：
+https://www.jb51.net/article/87131.htm
+
+https://blog.csdn.net/only_lamp/article/details/47317235
+
+
+BEGIN
+
+END;
+
+创建存储过程：
+DELIMITER $$
+CREATE PROCEDURE evsartwarn_on_order()
+BEGIN
+	
+	declare var int;
+	declare i int;
+	declare dat datetime;
+	declare ins int;
+	declare cusid int;
+	declare userid int;
+	declare losid int;
+
+	set i=0;
+	select count(distinct customer_id) into var from orders;
+	while(i<var) do
+		select distinct customer_id into cusid from orders limit i,1;
+		select user_id into userid from customer where customer_id = cusid;
+		select date into dat from orders where customer_id = cusid order by date desc limit 1;
+		SELECT TIMESTAMPDIFF(MONTH,dat,now()) into ins;
+		if(ins >= 6) then
+			select count(loss_id) into losid from loss where customer_id = cusid;
+			if(losid = 0) then
+				insert into loss(loss_id,customer_id,user_id,orderdate,state) values (0,cusid,userid,dat,0);
+			end if;
+			commit;
+		end if;
+		set i = i + 1;
+	end while;
+END;
+$$
+DELIMITER ;
+查看存储过程：
+select `name` from mysql.proc where db = 'crm' and `type` = 'PROCEDURE';
+查看时间差：
+SELECT TIMESTAMPDIFF(MONTH,'2009-10-01','2009-09-01'); 
+interval可是： 
+SECOND 秒 SECONDS 
+MINUTE 分钟 MINUTES 
+HOUR 时间 HOURS 
+DAY 天 DAYS 
+MONTH 月 MONTHS 
+YEAR 年 YEARS

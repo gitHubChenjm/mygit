@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.LossMapper">
+	<resultMap id="BaseResultMap" type="com.neuedu.crm.bean.Loss">
+		<id column="loss_id" jdbcType="INTEGER" property="lossId" />
+		<!-- <result column="customer_id" jdbcType="INTEGER" property="customerId" /> -->
+		<!-- <result column="user_id" jdbcType="INTEGER" property="userId" /> -->
+		<result column="orderdate" jdbcType="DATE" property="orderdate" />
+		<result column="confirmdate" jdbcType="DATE" property="confirmdate" />
+		<result column="measure" jdbcType="VARCHAR" property="measure" />
+		<result column="reason" jdbcType="VARCHAR" property="reason" />
+		<result column="state" jdbcType="VARCHAR" property="state" />
+		<association property="customer" column="customer_id"
+			javaType="Customer" select="findCustomer">
+			<id column="customer_id" property="customerId" />
+			<result column="name" property="name" />
+		</association>
+		<association property="user" column="user_id" javaType="User" select="findUser">
+			<id column="id" property="id" />
+			<result column="account" property="account" />
+		</association>
+	</resultMap>
+
+	<select id="findCustomer" parameterType="int" resultType="Customer">
+		select customer_id customerId,name from customer where customer_id=#{customerId}
+	</select>
+	
+	<select id="findUser" parameterType="int" resultType="User">
+		select * from user where id=#{id}
+	</select>
+	
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from loss
+	</select>
+
+	<select id="findById" parameterType="INTEGER" resultMap="BaseResultMap">
+		select * from loss
+		<where>
+			<if test="_parameter != null">
+				loss_id = #{lossId}
+			</if>
+		</where>
+	</select>
+	
+	<update id="editLoss" parameterType="Loss">
+		update loss
+		<set>
+			<if test="customer != null and customer.customerId != null">
+				customer_id = #{customer.customerId},
+			</if>
+			<if test="user != null and user.id != null">
+				user_id = #{user.id},
+			</if>
+			<if test="orderdate != null">
+				orderdate = #{orderdate},
+			</if>
+			<choose>
+				<when test="confirmdate != null">
+					confirmdate = #{confirmdate},
+				</when>
+				<when test="confirmdate == null">
+					confirmdate = NULL,
+				</when>
+			</choose>
+			<if test="measure != null">
+				measure = #{measure,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				reason = #{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where loss_id = #{lossId}
+	</update>
+	
+	<insert id="addLoss" parameterType="Loss">
+		insert into loss (loss_id, customer_id, user_id,
+		orderdate, confirmdate, measure,
+		reason, state)
+		values (0, #{customer.customerId},
+		#{user.id},
+		#{orderdate}, #{confirmdate}, #{measure,jdbcType=VARCHAR},
+		#{reason,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from loss
+		where
+		loss_id = #{lossId,jdbcType=INTEGER}
+	</delete>
+	
+	<sql id="Base_Column_List">
+		loss_id, customer_id, user_id, orderdate, confirmdate, measure, reason, state
+	</sql>
+	
+	<select id="findByExample" parameterType="Loss" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from loss
+		<where>
+			<if test="customer != null and customer.customerId != 0">
+				customer_id = #{customer.customerId}
+			</if>
+			<if test="user != null and user.id != 0">
+				user_id = #{user.id}
+			</if>
+			<if test="orderdate != null">
+				orderdate = #{orderdate},
+			</if>
+			<if test="confirmdate != null">
+				confirmdate = #{confirmdate},
+			</if>
+			<if test="measure != null">
+				measure like concat(concat("%",#{measure,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="reason != null">
+				reason like concat(concat("%",#{reason,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="state != null">
+				state like concat(concat("%",#{state,jdbcType=VARCHAR}),"%")
+			</if>
+		</where>
+	</select>
+
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap">
+		select * from loss where 1=1
+		<if test="param != null and param.customer != null and param.customer.customerId != null">
+			and customer_id = #{param.customer.customerId}
+		</if>
+		<if test="param != null and param.user != null and param.user.id != null">
+			and user_id = #{param.user.id}
+		</if>
+		<if test="param != null and param.measure != null and param.measure != &quot;&quot;">
+			and measure like concat(concat("%",#{param.measure,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.reason != null and param.reason != &quot;&quot;">
+			and reason like concat(concat("%",#{param.reason,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.state != null and param.state != &quot;&quot;">
+			and state like concat(concat("%",#{param.state,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.confirmdate != null">
+			and state like concat(concat("%",#{param.state,jdbcType=VARCHAR}),"%")
+		</if>
+		<choose>
+			<when test="param != null and param.startCreateDate != null">
+				and orderdate between #{param.startCreateDate}
+			</when>
+			<otherwise>
+				and orderdate between '0000-00-00'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="param != null and param.endCreateDate != null">
+				and #{param.endCreateDate}
+			</when>
+			<otherwise>
+				and now()
+			</otherwise>
+		</choose>
+		limit #{startIndex},#{pageSize}
+	</select>
+
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(loss_id) from loss where 1=1
+		<if test="param != null and param.customer != null and param.customer.customerId != null">
+			and customer_id = #{param.customer.customerId}
+		</if>
+		<if test="param != null and param.user != null and param.user.id != null">
+			and user_id = #{param.user.id}
+		</if>
+		<if test="param != null and param.measure != null and param.measure != &quot;&quot;">
+			and measure like concat(concat("%",#{param.measure,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.reason != null and param.reason != &quot;&quot;">
+			and reason like concat(concat("%",#{param.reason,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.state != null and param.state != &quot;&quot;">
+			and state like concat(concat("%",#{param.state,jdbcType=VARCHAR}),"%")
+		</if>
+		<choose>
+			<when test="param != null and param.startCreateDate != null">
+				and orderdate between #{param.startCreateDate}
+			</when>
+			<otherwise>
+				and orderdate between '0000-00-00'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="param != null and param.endCreateDate != null">
+				and #{param.endCreateDate}
+			</when>
+			<otherwise>
+				and now()
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.ServiceMapper">
+<!-- mapper start -->
+   <resultMap id="BaseResultMap" type="Service">
+    <id column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="request" jdbcType="VARCHAR" property="request" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="principal_date" jdbcType="DATE" property="principalDate" />
+    <result column="deal_content" jdbcType="VARCHAR" property="dealContent" />
+    <result column="deal_date" jdbcType="DATE" property="dealDate" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <association property="evaluateId" column="evaluate_id" javaType="WordBook" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="title" property="title"/>
+    	<result column="value" property="value"/>
+    	<result column="editable" property="editable"/>
+    </association>
+    <association property="servicecategoryId" column="servicecategory_id" javaType="WordBook" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="title" property="title"/>
+    	<result column="value" property="value"/>
+    	<result column="editable" property="editable"/>
+    </association>
+    <association property="serviceStyle" column="service_style" javaType="WordBook" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="title" property="title"/>
+    	<result column="value" property="value"/>
+    	<result column="editable" property="editable"/>
+    </association>
+    <association property="statusId" column="status_id"  javaType="WordBook" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="title" property="title"/>
+    	<result column="value" property="value"/>
+    	<result column="editable" property="editable"/>
+    </association>
+ 
+     <association property="createId" column="create_id"  javaType="User" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="account" property="account"/>
+    	<result column="tel" property="tel"/>
+    </association>
+    <association  property="principalId" column="principal_id"  javaType="User" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="account" property="account"/>
+    	<result column="tel" property="tel"/>
+    </association>
+    <association property="customer" column="customer_id" javaType="Customer" jdbcType="INTEGER">
+    	<id column="customer_id" property="customerId"/>
+    	<result column="address" property="address"/>
+    	<result column="name" property="name"/>
+    	<result column="change" property="change"/>
+    </association>
+    <association property="dealId" column="deal_id" javaType="User" jdbcType="INTEGER">
+    	<id property="id" column="id"/>
+    	<result column="account" property="account"/>
+    	<result column="tel" property="tel"/>
+    </association>
+
+  </resultMap> 
+  
+  <resultMap id="BaseResultMap1" type="Service">
+    <id column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="request" jdbcType="VARCHAR" property="request" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="principal_date" jdbcType="DATE" property="principalDate" />
+    <result column="deal_content" jdbcType="VARCHAR" property="dealContent" />
+    <result column="deal_date" jdbcType="DATE" property="dealDate" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <association property="evaluateId" column="evaluate_id" javaType="WordBook" jdbcType="INTEGER" select="findWordBook">
+    
+    </association>
+    <association property="servicecategoryId" column="servicecategory_id" javaType="WordBook" jdbcType="INTEGER" select="findWordBook">
+    </association>
+    <association property="serviceStyle" column="service_style" javaType="WordBook" jdbcType="INTEGER" select="findWordBook">
+    	
+    </association>
+    <association select="findWordBook" property="statusId" column="status_id"  javaType="WordBook" jdbcType="INTEGER">
+    	
+    </association>
+     <association select="findUser" property="createId" column="create_id"  javaType="User" jdbcType="INTEGER">
+   
+    </association>
+    <association select="findUser" property="principalId" column="principal_id"  javaType="User" jdbcType="INTEGER">
+    	
+    </association>
+    <association select="findCustomer" property="customer" column="customer_id" javaType="Customer" jdbcType="INTEGER">
+    	
+    </association>
+    <association select="findUser" property="dealId" column="deal_id" javaType="User" jdbcType="INTEGER">
+    	
+    </association>
+  </resultMap> 
+ <!-- mapper end -->
+ 
+ <!-- sql demo start-->
+ 	
+ <!-- sql demo end -->
+<!-- select start -->	
+<select id="findWordBook" parameterType="int" resultType="WordBook">
+	select * 
+	from wordbook
+	where id=#{evaluateId}
+</select>
+
+<select id="findUser" parameterType="int" resultType="User">
+	select * 
+	from user
+	where id=#{evaluateId}
+</select>
+<select id="findCustomer" parameterType="int" resultType="Customer">
+	select * 
+	from customer
+	where customer_id=#{evaluateId}
+</select>
+
+  <select id="findAll" resultMap="BaseResultMap1">
+  	select * from service
+  </select> 
+  <select id="findById" resultMap="BaseResultMap1">
+  	select * from service
+  	where service_id = #{id}
+  </select>
+<!-- select end -->
+
+<!-- insert start -->
+  <insert id="addService" parameterType="Service">
+    insert into service (service_id, servicecategory_id, service_style, 
+      summary, customer_id, request, 
+      create_id, create_date, status_id)
+    values (#{serviceId}, #{servicecategoryId.id}, #{serviceStyle.id}, 
+      #{summary}, #{customer.customerId}, #{request}, 
+      #{createId.id}, #{createDate}, #{statusId.id})
+  </insert> 
+<!-- insert end -->
+
+<!-- update start -->
+  <update id="editService" parameterType="Service">
+  	update service
+  	<trim prefix="set" suffixOverrides="," suffix="where service_id = #{serviceId}">
+  		<if test="createDate != null">
+  			create_date = #{createDate},
+  		</if>
+  		<if test="createId != null and createId.id != null">
+  			create_id = #{createId.id},
+  		</if>
+  		<if test="customer != null and cutomer.customerId != null">
+  			customer_id= #{cutomer.customerId},
+  		</if>
+  		<if test="dealContent != null">
+  			deal_content= #{dealContent},
+  		</if>
+  		<if test="dealDate != null">
+  			deal_date= #{dealDate,jdbcType=DATE},
+  		</if>
+  		<if test="dealId != null and dealId.id != null">
+  			deal_id= #{dealId.id},
+  		</if>
+  		<if test="evaluateId != null and evaluateId.id != null">
+  			evaluate_id= #{evaluateId.id},
+  		</if>
+  		<if test="principalDate != null">
+  			principal_date= #{principalDate,jdbcType=DATE},
+  		</if>
+  		<if test="principalId != null and principalId.id != null">
+  			principal_id= #{principalId.id},
+  		</if>
+  		<if test="request != null">
+  			request= #{request},
+  		</if>
+  		<if test="result != null">
+  			result= #{result},
+  		</if>
+  		<if test="servicecategoryId != null and servicecategoryId.id != null">
+  			servicecategory_id= #{servicecategoryId.id},
+  		</if>
+  		<if test="serviceStyle!= null">
+  			service_style = #{serviceStyle!},
+  		</if>
+  		<if test="statusId != null and statusId.id != null">
+  			status_id = #{statusId.id},
+  		</if>
+  		<if test="summary != null">
+  			summary = #{summary},
+  		</if>
+  	</trim>
+  </update>
+<!-- update end -->  
+
+<!-- delete start -->
+  <delete id="deleteById" parameterType="INTEGER">
+  		delete from service
+  		where service_id = #{serviceId}
+  </delete>
+  
+  <delete id="deleteByServiceIdList" >
+  	delete from service
+  	where service_id in
+  	<foreach collection="array" item="item" open="(" separator="," close=")">
+  		#{item}
+  	</foreach>
+  </delete>
+ <!-- delete end -->
+
+</mapper>

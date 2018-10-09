@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.SaleVoMapper">
+
+
+  <resultMap id="SaleVoMap" type="SaleVo">
+    <id column="sale_id" jdbcType="INTEGER" property="saleId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="probability" jdbcType="DOUBLE" property="probability" />
+    <result column="contacts" jdbcType="VARCHAR" property="contacts" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="assign_date" jdbcType="TIMESTAMP" property="assignDate" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="create_id" jdbcType="INTEGER" property="createId" />
+    <result column="deal_id" jdbcType="INTEGER" property="dealId" />
+	<result column="create_man" jdbcType="VARCHAR" property="createMan" />
+	<result column="deal_man" jdbcType="VARCHAR" property="dealMan" />
+  </resultMap>
+  
+  <select id="findAllSaleVo" resultMap="SaleVoMap">
+  	select * from sale_info
+  </select>
+  
+  <select id="findSaleVoById" parameterType="int" resultMap="SaleVoMap">
+  	select * from sale_info where sale_id = #{saleId}
+  </select>
+  
+<!-- 带条件分页查询 -->
+	<select id="findByPagerWithCond" parameterType="Pager" resultMap="SaleVoMap">
+		select * from sale_info 
+		<where>
+			<if test="param!=null and param.saleId!=null">sale_id=#{param.saleId}</if>			
+			<if test="param!=null and param.customerName!=null">and customer_name like "%"#{param.customerName}"%"</if>
+			<if test="param!=null and param.summary!=null">and summary like "%"#{param.summary}"%"</if>
+			<if test="param!=null and param.source!=null">and source like "%"#{param.source}"%"</if>
+			<if test="param!=null and param.probability!=null">and probability<![CDATA[>=]]>#{param.probability}</if>	
+			<if test="param!=null and param.contacts!=null">and contacts like "%"#{param.contacts}"%"</if>
+			<if test="param!=null and param.tel!=null">and tel like "%"#{param.tel}"%"</if>
+			<if test="param!=null and param.status!=null">and status=#{param.status}</if>
+			<if test="param!=null and param.createId!=null">and create_id=#{param.createId}</if>	
+			<if test="param!=null and param.dealId!=null">and deal_id=#{param.dealId}</if>
+			<if test="param!=null and param.state!=null">and state=#{param.state}</if>
+			<if test="param!=null and param.earlyDate!=null">and create_date<![CDATA[>]]>#{param.earlyDate}</if>
+			<if test="param!=null and param.lateDate!=null">and create_date<![CDATA[<]]>#{param.lateDate}</if>			
+		</where>
+		order by create_date desc limit #{startIndex},#{pageSize}
+	</select>
+	
+	
+	<!-- 带条件分页查询  按指派时间倒序排列-->
+	<select id="findByPagerWithCondAssign" parameterType="Pager" resultMap="SaleVoMap">
+		select * from sale_info 
+		<where>
+			<if test="param!=null and param.saleId!=null">sale_id=#{param.saleId}</if>			
+			<if test="param!=null and param.customerName!=null">and customer_name like "%"#{param.customerName}"%"</if>
+			<if test="param!=null and param.summary!=null">and summary like "%"#{param.summary}"%"</if>
+			<if test="param!=null and param.source!=null">and source like "%"#{param.source}"%"</if>
+			<if test="param!=null and param.probability!=null">and probability<![CDATA[>=]]>#{param.probability}</if>	
+			<if test="param!=null and param.contacts!=null">and contacts like "%"#{param.contacts}"%"</if>
+			<if test="param!=null and param.tel!=null">and tel like "%"#{param.tel}"%"</if>
+			<if test="param!=null and param.status!=null">and status=#{param.status}</if>
+			<if test="param!=null and param.createId!=null">and create_id=#{param.createId}</if>	
+			<if test="param!=null and param.dealId!=null">and deal_id=#{param.dealId}</if>
+			<if test="param!=null and param.state!=null">and state=#{param.state}</if>
+			<if test="param!=null and param.earlyDate!=null">and create_date<![CDATA[>]]>#{param.earlyDate}</if>
+			<if test="param!=null and param.lateDate!=null">and create_date<![CDATA[<]]>#{param.lateDate}</if>				
+		</where>
+		order by assign_date desc limit #{startIndex},#{pageSize}
+	</select>
+	
+	<!-- 带条件分页查询 之查询总记录数-->
+	<!-- 
+				查询条件中的小于或大于号可以用转义字符进行编写: 小于: &lt; 大于: &gt;
+				或者可以使用cdata标记进行标注: <![CDATA[]]>
+	-->
+	<select id="countForPagerWithCond" parameterType="Pager" resultType="int">
+		select count(sale_id) from sale_info
+		<where>
+			<if test="param!=null and param.saleId!=null">sale_id=#{param.saleId}</if>			
+			<if test="param!=null and param.customerName!=null">and customer_name like "%"#{param.customerName}"%"</if>
+			<if test="param!=null and param.summary!=null">and summary like "%"#{param.summary}"%"</if>
+			<if test="param!=null and param.source!=null">and source like "%"#{param.source}"%"</if>
+			<if test="param!=null and param.probability!=null">and probability<![CDATA[>=]]>#{param.probability}</if>	
+			<if test="param!=null and param.contacts!=null">and contacts like "%"#{param.contacts}"%"</if>
+			<if test="param!=null and param.tel!=null">and tel like "%"#{param.tel}"%"</if>
+			<if test="param!=null and param.status!=null">and status=#{param.status}</if>
+			<if test="param!=null and param.createId!=null">and create_id=#{param.createId}</if>	
+			<if test="param!=null and param.dealId!=null">and deal_id=#{param.dealId}</if>
+			<if test="param!=null and param.state!=null">and state=#{param.state}</if>
+			<if test="param!=null and param.earlyDate!=null">and create_date<![CDATA[>]]>#{param.earlyDate}</if>
+			<if test="param!=null and param.lateDate!=null">and create_date<![CDATA[<]]>#{param.lateDate}</if>			
+		</where>
+	</select>
+	
+	<!-- 查询所有客户经理 -->
+	<select id="findAllCustomerManager" resultType="User">
+		select distinct id,account from list_authority where role_id = 3
+	</select>
+	
+	<!-- 查询某个用户的角色 -->
+	<select id="findRoleById" parameterType="int" resultType="int">
+		select role_id from user_role where user_id = #{saleId} 
+	</select>
+  
+  
+</mapper>

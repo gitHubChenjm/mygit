@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.UserMapper">
+	<resultMap id="BaseResultMap" type="User">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="account" jdbcType="VARCHAR" property="account" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<result column="head" jdbcType="VARCHAR" property="head" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		
+	</resultMap>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from user
+	</select>
+
+	<select id="findAcount" resultType="User" parameterType="String">
+		select * from user
+		where account =#{account}
+	</select>
+
+	<select id="findForLogin" resultMap="BaseResultMap">
+		select * from user
+		<where>
+			<if test="account != null and account != &quot;&quot;">
+			   account = #{account}
+			</if>
+			<if test="password != null and password != &quot;&quot;">
+				and password = #{password}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findById">
+		select * from user
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<update id="editUser" parameterType="User">
+		update user
+	
+		<trim prefix="set" suffixOverrides="," suffix="where id = #{id}">
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="tel != null">
+				tel = #{tel},
+			</if>
+			<if test="head != null">
+				head = #{head},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+		</trim>
+		
+	</update>
+	<update id="changePW" parameterType="User" >
+		update user
+		set password = #{password}
+		where account = #{account}
+	</update>
+	<insert id="addUser" parameterType="User">
+		insert into user (id,
+		account, tel,
+		head, password)
+		values (0,
+		#{account,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR},
+		#{head,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from user
+		where id =
+		#{id,jdbcType=INTEGER}
+	</delete>
+
+	<sql id="Base_Column_List">
+		id, account, tel, head, password
+	</sql>
+
+	<select id="findByExample" parameterType="User"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		<where>
+			<if test="userId != null">
+				user_id like concat(concat("%",#{userId}),"%")
+			</if>
+			<if test="account != null and account != &quot;&quot;">
+				and account like concat(concat("%",#{account}),"%")
+			</if>
+			<if test="tel != null and tel != &quot;&quot;">
+				and tel like concat(concat("%",#{tel}),"%")
+			</if>
+			<if test="head != null and head != &quot;&quot;">
+				and head like concat(concat("%",#{head}),"%")
+			</if>
+			<if test="password != null and password != &quot;&quot;">
+				and password like concat(concat("%",#{password}),"%")
+			</if>
+		</where>
+		order by ${orderByClause}
+	</select>
+	
+	<select id="loginByExample" parameterType="User"
+		resultMap="BaseResultMap">
+		select distinct * from user
+		<where>
+			<if test="account != null and account != &quot;&quot;">
+				account=#{account,jdbcType=VARCHAR}
+			</if>
+			<if test="password != null and password != &quot;&quot;">
+				and password=#{password,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap">
+	    select * from user
+		<where>
+			<if test="userId != null">
+				user_id like concat(concat("%",#{userId}),"%")
+			</if>
+			<if test="account != null and account != &quot;&quot;">
+				and account like concat(concat("%",#{account}),"%")
+			</if>
+			<if test="tel != null and tel != &quot;&quot;">
+				and tel like concat(concat("%",#{tel}),"%")
+			</if>
+			<if test="head != null and head != &quot;&quot;">
+				and head like concat(concat("%",#{head}),"%")
+			</if>
+			<if test="password != null and password != &quot;&quot;">
+				and password like concat(concat("%",#{password}),"%")
+			</if>
+		</where>
+	</select>
+	
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(id) from user
+		<where>
+			<if test="userId != null">
+				user_id like concat(concat("%",#{userId}),"%")
+			</if>
+			<if test="account != null and account != &quot;&quot;">
+				and account like concat(concat("%",#{account}),"%")
+			</if>
+			<if test="tel != null and tel != &quot;&quot;">
+				and tel like concat(concat("%",#{tel}),"%")
+			</if>
+			<if test="head != null and head != &quot;&quot;">
+				and head like concat(concat("%",#{head}),"%")
+			</if>
+			<if test="password != null and password != &quot;&quot;">
+				and password like concat(concat("%",#{password}),"%")
+			</if>
+		</where>
+	</select>
+	
+</mapper>

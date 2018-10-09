@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+ "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!-- mybatis generator生成器pom配置文件 -->
+<generatorConfiguration>
+	<context id="CRM">
+
+		<commentGenerator>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection connectionURL="jdbc:mysql://localhost:3306/crm"
+			driverClass="com.mysql.jdbc.Driver" password="123456" userId="javauser" />
+		<javaModelGenerator targetPackage="com.neuedu.CRM.bean"
+			targetProject="CRM" />
+		<sqlMapGenerator targetPackage="com.neuedu.CRM.bean"
+			targetProject="CRM" />
+		<javaClientGenerator targetPackage="com.neuedu.CRM.mapper"
+			targetProject="CRM" type="XMLMAPPER" />
+		<table schema="dbo" tableName="user">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="user_role">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo2" tableName="authority">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="communicate">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="contacts">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="customer">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="develop">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="loss">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="order">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="orderitem">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="product">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="role">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="role_authority">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="sale">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="service">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="stock">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+		<table schema="dbo1" tableName="workbook">
+			<columnOverride column="LONG_VARCHAR_FIELD" />
+		</table>
+	</context>
+</generatorConfiguration>

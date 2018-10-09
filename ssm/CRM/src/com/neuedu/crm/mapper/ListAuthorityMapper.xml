@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuedu.crm.mapper.ListAuthorityMapper">
+	<sql id="Example">
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="roleId != null">
+			and roleId = #{roleId}
+		</if>
+		<if test="authorityId != null">
+			and authorityId = #{authorityId}
+		</if>
+		<if test="navigation != null">
+			and navigation = #{navigation}
+		</if>
+		<if test="roleName != null">
+			and roleName like "%"#{roleName}"%"
+		</if>
+		<if test="name != null">
+			and name like "%"#{name}"%"
+		</if>
+		<if test="authorityMark != null">
+			and authorityMark like "%"#{authorityMark}"%"
+		</if>
+		<if test="account != null">
+			and account = #{account}
+		</if>
+	</sql>
+	<resultMap type="ListAuthority" id="BaseMapper">
+		<result column="account" property="account"/>
+		<result column="id" property="id"/>
+		<result column="role_name" property="roleName"/>
+		<result column="role_id" property="roleId"/>
+		<result column="authority_id" property="authorityId"/>
+		<result column="authority_mark" property="authorityMark"/>
+		<result column="name" property="name"/>
+		<result column="navigation" property="navigation"/>
+		<result column="sort" property="sort"/>
+	</resultMap>
+	<select id="findAllCustomerDeal" resultType="ListAuthority">
+		select distinct(id) id,account 
+		from list_authority
+		where role_name = '客户经理'
+	</select>
+	
+	<select id="findByExample" resultMap="BaseMapper" parameterType="ListAuthority">
+		select * from list_authority where 1=1
+		<include refid="Example"></include>
+	</select>
+	
+	<!-- 分页开始 -->
+	<select id="findBypagerExample" parameterType="Pager" resultType="listAuthority">
+		select distinct id id,account,role_name roleName from list_authority where 1=1
+		<include refid="findPagerExample"></include>
+		limit #{startIndex}, #{pageSize}
+	</select>
+	
+	<select id="countForPager" parameterType="Pager" resultType="INTEGER">
+		select count(distinct id) from list_authority where 1=1
+		<include refid="findPagerExample"></include>
+	</select>
+	
+	
+	<sql id="findPagerExample">
+		<if test="param != null and param.account !=null">
+			and account like "%"#{param.account}"%"
+		</if>
+		<if test="param !=null and param.roleId != -1 ">
+			and role_id = #{param.roleId}
+		</if>
+	</sql>
+	<!-- 分页结束 -->
+	
+	<select id="findByIdList" resultType="ListAuthority">
+		select distinct(id) id,account
+		from list_authority
+		<foreach collection="list" open="where id in(" item="item" separator="," close=")" >
+			#{item}
+		</foreach>
+	</select>
+</mapper>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.ContactsMapper">
+	<resultMap id="BaseResultMap" type="Contacts">
+		<id column="contacts_id" jdbcType="INTEGER" property="contactsId" />
+		<!-- <result column="customer_id" jdbcType="INTEGER" property="customerId" 
+			/> -->
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="gender" jdbcType="VARCHAR" property="gender" />
+		<result column="job" jdbcType="VARCHAR" property="job" />
+		<result column="job_tel" jdbcType="VARCHAR" property="jobTel" />
+		<result column="calls" jdbcType="VARCHAR" property="calls" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<association property="customer" column="customer_id"
+			javaType="Customer" select="findCustomer">
+			<id column="customer_id" property="customerId" />
+			<result column="name" property="name" />
+		</association>
+	</resultMap>
+	
+	<select id="findCustomer" parameterType="int" resultType="Customer">
+		select customer_id customerId,name from customer where customer_id=#{customerId}
+	</select>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from contacts
+	</select>
+
+	<select id="findById" parameterType="INTEGER" resultMap="BaseResultMap">
+		select * from contacts
+		<where>
+			<if test="_parameter != null">
+				contacts_id = #{contactsId}
+			</if>
+		</where>
+	</select>
+
+	<update id="editContacts" parameterType="Contacts">
+		update contacts
+		<set>
+			<if test="customer != null and customer.customerId != 0">
+				customer_id = #{customer.customerId,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="gender != null">
+				gender = #{gender,jdbcType=VARCHAR},
+			</if>
+			<if test="job != null">
+				job = #{job,jdbcType=VARCHAR},
+			</if>
+			<if test="jobTel != null">
+				job_tel = #{jobTel,jdbcType=VARCHAR},
+			</if>
+			<if test="calls != null">
+				calls = #{calls,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where contacts_id = #{contactsId}
+	</update>
+
+	<insert id="addContacts" parameterType="Contacts">
+		insert into contacts (contacts_id, customer_id, name,
+		gender, job, job_tel,
+		calls, phone, remark
+		)
+		values (0, #{customer.customerId},
+		#{name,jdbcType=VARCHAR},
+		#{gender,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{jobTel,jdbcType=VARCHAR},
+		#{calls,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from contacts
+		where contacts_id = #{contactsId,jdbcType=INTEGER}
+	</delete>
+
+	<sql id="Base_Column_List">
+		contacts_id, customer_id, name, gender, job, job_tel, calls, phone, remark
+	</sql>
+	
+	<select id="findByExample" parameterType="Contacts" resultMap="BaseResultMap">
+	    select
+		<include refid="Base_Column_List" />
+		from contacts
+		<where>
+			<if test="customer != null and customer.customerId != 0">
+				customer_id = #{customer.customerId}
+			</if>
+			<if test="name != null and name != &quot;&quot;">
+				name like concat(concat("%",#{name,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="gender != null and gender != &quot;&quot;">
+				gender like concat(concat("%",#{gender,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="job != null and job != &quot;&quot;">
+				job like concat(concat("%",#{job,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="jobTel != null and jobTel != &quot;&quot;">
+				job_tel like concat(concat("%",#{jobTel,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="calls != null and calls != &quot;&quot;">
+				calls like concat(concat("%",#{calls,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="phone != null and phone != &quot;&quot;">
+				phone like concat(concat("%",#{phone,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="remark != null and remark != &quot;&quot;">
+				remark like concat(concat("%",#{remark,jdbcType=VARCHAR}),"%")
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap">
+	    select * from contacts where 1=1
+		<if test="param != null and param.customer != null and param.customer.customerId != null">
+				and customer_id = #{param.customer.customerId}
+			</if>
+			<if test="param != null and param.name != null and param.name != &quot;&quot;">
+				and name like concat(concat("%",#{param.name,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.gender != null">
+				and gender like concat(concat("%",#{param.gender,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.job != null">
+				and job like concat(concat("%",#{param.job,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.jobTel != null and param.jobTel != &quot;&quot;">
+				and job_tel like concat(concat("%",#{param.jobTel,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.calls != null and param.calls != &quot;&quot;">
+				 and calls like concat(concat("%",#{param.calls,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.phone != null and param.phone != &quot;&quot;">
+				and phone like concat(concat("%",#{param.phone,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.remark != null and param.remark != &quot;&quot;">
+				and remark like concat(concat("%",#{param.remark,jdbcType=VARCHAR}),"%")
+			</if>
+		limit #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(contacts_id) from contacts where 1=1
+			<if test="param != null and param.customer != null and param.customer.customerId != null">
+				and customer_id = #{param.customer.customerId}
+			</if>
+			<if test="param != null and param.name != null and param.name != &quot;&quot;">
+				and name like concat(concat("%",#{param.name,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.gender != null and param.gender != &quot;&quot;">
+				and gender like concat(concat("%",#{param.gender,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.job != null and param.job != &quot;&quot;">
+				and job like concat(concat("%",#{param.job,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.jobTel != null and param.jobTel != &quot;&quot;">
+				and job_tel like concat(concat("%",#{param.jobTel,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.calls != null and param.calls != &quot;&quot;">
+				 and calls like concat(concat("%",#{param.calls,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.phone != null and param.phone != &quot;&quot;">
+				and phone like concat(concat("%",#{param.phone,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="param != null and param.remark != null and param.remark != &quot;&quot;">
+				and remark like concat(concat("%",#{param.remark,jdbcType=VARCHAR}),"%")
+			</if>
+	</select>
+	
+	<delete id="deleteByContactsList">
+		delete from contacts
+		where contacts_id in
+		<foreach collection="array" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.CustomerMapper">
+	<!-- <resultMap id="BaseResultMap" type="Customer"> <id column="customer_id" 
+		jdbcType="INTEGER" property="customerId" /> <result column="name" jdbcType="VARCHAR" 
+		property="name" /> <result column="contacts" jdbcType="VARCHAR" property="contacts" 
+		/> <result column="tel" jdbcType="VARCHAR" property="tel" /> <result column="user_id" 
+		jdbcType="INTEGER" property="userId" /> <result column="custcategory_id" 
+		jdbcType="INTEGER" property="custcategoryId" /> <result column="credit_id" 
+		jdbcType="INTEGER" property="creditId" /> <result column="satisfied_id" jdbcType="INTEGER" 
+		property="satisfiedId" /> <result column="address" jdbcType="VARCHAR" property="address" 
+		/> <result column="postal" jdbcType="VARCHAR" property="postal" /> <result 
+		column="fax" jdbcType="VARCHAR" property="fax" /> <result column="url" jdbcType="VARCHAR" 
+		property="url" /> <result column="legal_person" jdbcType="VARCHAR" property="legalPerson" 
+		/> <result column="license" jdbcType="VARCHAR" property="license" /> <result 
+		column="fund" jdbcType="DOUBLE" property="fund" /> <result column="turnover" 
+		jdbcType="DOUBLE" property="turnover" /> <result column="bank" jdbcType="VARCHAR" 
+		property="bank" /> <result column="bank_number" jdbcType="VARCHAR" property="bankNumber" 
+		/> <result column="state_tax" jdbcType="VARCHAR" property="stateTax" /> <result 
+		column="land_tax" jdbcType="VARCHAR" property="landTax" /> <result column="custfrom_id" 
+		jdbcType="INTEGER" property="custfromId" /> <result column="changes" jdbcType="INTEGER" 
+		property="changes" /> </resultMap> -->
+
+	<resultMap id="BaseResultMap2" type="Customer">
+		<id column="customer_id" jdbcType="INTEGER" property="customerId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="contacts" jdbcType="VARCHAR" property="contacts" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<!-- <result column="user_id" jdbcType="INTEGER" property="userId" /> <result 
+			column="custcategory_id" jdbcType="INTEGER" property="custcategoryId" /> 
+			<result column="credit_id" jdbcType="INTEGER" property="creditId" /> <result 
+			column="satisfied_id" jdbcType="INTEGER" property="satisfiedId" /> -->
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="postal" jdbcType="VARCHAR" property="postal" />
+		<result column="fax" jdbcType="VARCHAR" property="fax" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="legal_person" jdbcType="VARCHAR" property="legalPerson" />
+		<result column="license" jdbcType="VARCHAR" property="license" />
+		<result column="fund" jdbcType="DOUBLE" property="fund" />
+		<result column="turnover" jdbcType="DOUBLE" property="turnover" />
+		<result column="bank" jdbcType="VARCHAR" property="bank" />
+		<result column="bank_number" jdbcType="VARCHAR" property="bankNumber" />
+		<result column="state_tax" jdbcType="VARCHAR" property="stateTax" />
+		<result column="land_tax" jdbcType="VARCHAR" property="landTax" />
+		<!-- <result column="custfrom_id" jdbcType="INTEGER" property="custfromId" 
+			/> -->
+		<result column="changes" jdbcType="INTEGER" property="changes" />
+		<association property="user" column="user_id" javaType="User"
+			select="findUser">
+			<id column="id" property="id" />
+			<result column="account" property="account" />
+		</association>
+		<association property="custcategoryId" column="custcategory_id"
+			javaType="WordBook" select="findWordBook">
+			<id column="id" property="id" />
+			<result column="value" property="value" />
+		</association>
+		<association property="creditId" column="credit_id"
+			javaType="WordBook" select="findWordBook">
+			<id column="id" property="id" />
+			<result column="value" property="value" />
+		</association>
+		<association property="satisfiedId" column="satisfied_id"
+			javaType="WordBook" select="findWordBook">
+			<id column="id" property="id" />
+			<result column="value" property="value" />
+		</association>
+		<association property="custfromId" column="custfrom_id"
+			javaType="WordBook" select="findWordBook">
+			<id column="id" property="id" />
+			<result column="value" property="value" />
+		</association>
+	</resultMap>
+
+	<select id="findWordBook" parameterType="int" resultType="WordBook">
+		select *
+		from wordbook
+		where id=#{id}
+	</select>
+
+	<select id="findUser" parameterType="int" resultType="User">
+		select *
+		from user
+		where id=#{id}
+	</select>
+
+	<!-- 因为太多属性，只能选择一些显示 -->
+	<select id="findAll" resultMap="BaseResultMap2">
+		<!-- select * from customer -->
+		<!-- select c.*,u.account,custcategoryId.value custcategoryId,custfromId.value 
+			custfromId,creditId.value creditId,satisfiedId.value satisfiedId from customer 
+			c,user u,wordbook custcategoryId,wordbook custfromId,wordbook creditId,wordbook 
+			satisfiedId where u.id = c.user_id and custfromId.id = c.custfrom_id and 
+			custcategoryId.id = c.custcategory_id; -->
+
+		select * from customer
+	</select>
+
+	<!-- <select id="findSome" resultMap="BaseResultMap2"> select name,contacts,tel,user_id,custcategory_id,address,custfrom_id 
+		</select> -->
+
+	<select id="findById" parameterType="INTEGER" resultMap="BaseResultMap2">
+		select * from customer
+		<where>
+			<if test="_parameter != null">
+				customer_id = #{customerId}
+			</if>
+		</where>
+	</select>
+
+	<update id="editCustomer" parameterType="Customer">
+		update customer
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="contacts != null">
+				contacts = #{contacts,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="user != null and user.id!= 0">
+				user_id = #{user.id},
+			</if>
+			<if test="custcategoryId != null and custcategoryId.id != 0">
+				custcategory_id = #{custcategoryId.id},
+			</if>
+			<if test="creditId != null and creditId.id != 0">
+				credit_id = #{creditId.id},
+			</if>
+			<if test="satisfiedId != null and satisfiedId.id != 0">
+				satisfied_id = #{satisfiedId.id},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="postal != null">
+				postal = #{postal,jdbcType=VARCHAR},
+			</if>
+			<if test="fax != null">
+				fax = #{fax,jdbcType=VARCHAR},
+			</if>
+			<if test="url != null">
+				url = #{url,jdbcType=VARCHAR},
+			</if>
+			<if test="legalPerson != null">
+				legal_person = #{legalPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="license != null">
+				license = #{license,jdbcType=VARCHAR},
+			</if>
+			<if test="fund != null">
+				fund = #{fund,jdbcType=DOUBLE},
+			</if>
+			<if test="turnover != null">
+				turnover = #{turnover,jdbcType=DOUBLE},
+			</if>
+			<if test="bank != null">
+				bank = #{bank,jdbcType=VARCHAR},
+			</if>
+			<if test="bankNumber != null">
+				bank_number = #{bankNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="stateTax != null">
+				state_tax = #{stateTax,jdbcType=VARCHAR},
+			</if>
+			<if test="landTax != null">
+				land_tax = #{landTax,jdbcType=VARCHAR},
+			</if>
+			<if test="custfromId != null and custfromId.id != 0">
+				custfrom_id = #{custfromId.id},
+			</if>
+			<if test="changes != null">
+				changes = #{changes,jdbcType=INTEGER},
+			</if>
+		</set>
+		where customer_id = #{customerId,jdbcType=INTEGER}
+	</update>
+
+	<insert id="addCustomer" parameterType="Customer">
+		insert into customer
+		(customer_id, name, contacts,
+		tel, user_id, custcategory_id,
+		credit_id,
+		satisfied_id, address,
+		postal, fax, url, legal_person,
+		license, fund,
+		turnover,
+		bank,
+		bank_number, state_tax,
+		land_tax, custfrom_id, changes
+		)
+		values
+		(0, #{name,jdbcType=VARCHAR},
+		#{contacts,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR},
+		#{user.id}, #{custcategoryId.id},
+		#{creditId.id}, #{satisfiedId.id},
+		#{address,jdbcType=VARCHAR},
+		#{postal,jdbcType=VARCHAR},
+		#{fax,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{legalPerson,jdbcType=VARCHAR},
+		#{license,jdbcType=VARCHAR},
+		#{fund,jdbcType=DOUBLE},
+		#{turnover,jdbcType=DOUBLE},
+		#{bank,jdbcType=VARCHAR},
+		#{bankNumber,jdbcType=VARCHAR},
+		#{stateTax,jdbcType=VARCHAR},
+		#{landTax,jdbcType=VARCHAR},
+		#{custfromId.id},
+		#{changes,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from
+		customer
+		where
+		customer_id = #{customerId,jdbcType=INTEGER}
+	</delete>
+
+	<sql id="Base_Column_List">
+		customer_id, name, contacts, tel, user_id, custcategory_id,
+		credit_id,
+		satisfied_id,
+		address, postal, fax, url, legal_person,
+		license, fund, turnover, bank,
+		bank_number,
+		state_tax, land_tax,
+		custfrom_id, changes
+	</sql>
+
+	<select id="findByExample" parameterType="Customer" resultMap="BaseResultMap2">
+		select
+		<include refid="Base_Column_List" />
+		from customer
+		<where>
+			<if test="name != null and name != &quot;&quot;">
+				name like
+				concat(concat("%",#{name,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="contacts != null and contacts != &quot;&quot;">
+				contacts like
+				concat(concat("%",#{contacts,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="tel != null and tel != &quot;&quot;">
+				tel like concat(concat("%",#{tel,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="user != null and user.id != 0">
+				user_id = #{user.id}
+			</if>
+			<if test="custcategoryId != null and custcategoryId.id != 0">
+				custcategory_id = #{custcategoryId.id}
+			</if>
+			<if test="creditId != null and creditId.id != 0">
+				credit_id = #{creditId.id}
+			</if>
+			<if test="satisfiedId != null and satisfiedId.id != 0">
+				satisfied_id = #{satisfiedId.id}
+			</if>
+			<if test="address != null and address != &quot;&quot;">
+				address like
+				concat(concat("%",#{address,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="postal != null and postal != &quot;&quot;">
+				postal like
+				concat(concat("%",#{postal,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="fax != null and fax != &quot;&quot;">
+				fax like concat(concat("%",#{fax,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="url != null and url != &quot;&quot;">
+				url like concat(concat("%",#{url,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="legalPerson != null and legalPerson != &quot;&quot;">
+				legal_person like
+				concat(concat("%",#{legalPerson,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="license != null and license != &quot;&quot;">
+				license like
+				concat(concat("%",#{license,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="fund != null and fund != 0.0">
+				fund = #{fund,jdbcType=DOUBLE}
+			</if>
+			<if test="turnover != null and turnover != 0.0">
+				turnover = #{turnover,jdbcType=DOUBLE}
+			</if>
+			<if test="bank != null and bank != &quot;&quot;">
+				bank like
+				concat(concat("%",#{bank,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="bankNumber != null and bankNumber != &quot;&quot;">
+				bank_number like
+				concat(concat("%",#{bankNumber,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="stateTax != null and stateTax != &quot;&quot;">
+				state_tax like
+				concat(concat("%",#{stateTax,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="landTax != null and landTax != &quot;&quot;">
+				land_tax like
+				concat(concat("%",#{landTax,jdbcType=VARCHAR}),"%")
+			</if>
+			<if test="custfromId != null and custfromId.id != 0;">
+				custfrom_id = #{custfromId.id}
+			</if>
+			<if test="changes != null">
+				changes = #{changes,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap2">
+		select * from customer where 1=1
+		<if
+			test="param != null and param.name != null and param.name != &quot;&quot;">
+			and name like concat(concat("%",#{param.name,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.contacts != null and param.contacts != &quot;&quot;">
+			and contacts like
+			concat(concat("%",#{param.contacts,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.tel != null and param.tel != &quot;&quot;">
+			and tel like concat(concat("%",#{param.tel,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.user != null and param.user.id != null">
+			and user_id = #{param.user.id}
+		</if>
+		<if
+			test="param != null and param.custcategoryId != null and param.custcategoryId.id != null">
+			and custcategory_id = #{param.custcategoryId.id}
+		</if>
+		<if
+			test="param != null and param.creditId != null and param.creditId.id != null">
+			and credit_id = #{param.creditId.id}
+		</if>
+		<if
+			test="param != null and param.satisfiedId != null and param.satisfiedId.id != null">
+			and satisfied_id = #{param.satisfiedId.id}
+		</if>
+		<if
+			test="param != null and param.address != null and param.address != &quot;&quot;">
+			and address like
+			concat(concat("%",#{param.address,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.postal != null and param.postal != &quot;&quot;">
+			and postal like concat(concat("%",#{param.postal,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.fax != null and param.fax != &quot;&quot;">
+			and fax like concat(concat("%",#{param.fax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.url != null and param.url != &quot;&quot;">
+			and url like concat(concat("%",#{param.url,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.legalPerson != null and param.legalPerson != &quot;&quot;">
+			and legal_person like
+			concat(concat("%",#{param.legalPerson,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.license != null and param.license != &quot;&quot;">
+			and license like
+			concat(concat("%",#{param.license,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.fund != 0.0">
+			and fund = #{param.fund,jdbcType=DOUBLE}
+		</if>
+		<if test="param != null and param.turnover != 0.0">
+			and turnover = #{param.turnover,jdbcType=DOUBLE}
+		</if>
+		<if
+			test="param != null and param.bank != null and param.bank != &quot;&quot;">
+			and bank like concat(concat("%",#{param.bank,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.bankNumber != null and param.bankNumber != &quot;&quot;">
+			and bank_number like
+			concat(concat("%",#{param.bankNumber,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.stateTax != null and param.stateTax != &quot;&quot;">
+			and state_tax like
+			concat(concat("%",#{param.stateTax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.landTax != null and param.landTax != &quot;&quot;">
+			and land_tax like
+			concat(concat("%",#{param.landTax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.custfromId != null and param.custfromId.id != null">
+			and custfrom_id = #{param.custfromId.id}
+		</if>
+		<if test="param != null and param.changes != null">
+			and changes = #{param.changes,jdbcType=INTEGER}
+		</if>
+		limit #{startIndex},#{pageSize}
+	</select>
+
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(customer_id) from customer where 1=1
+		<if
+			test="param != null and param.name != null and param.name != &quot;&quot;">
+			and name like concat(concat("%",#{param.name,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.contacts != null and param.contacts != &quot;&quot;">
+			and contacts like
+			concat(concat("%",#{param.contacts,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.tel != null and param.tel != &quot;&quot;">
+			and tel like concat(concat("%",#{param.tel,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.user != null and param.user.id != null">
+			and user_id = #{param.user.id}
+		</if>
+		<if
+			test="param != null and param.custcategoryId != null and param.custcategoryId.id != null">
+			and custcategory_id = #{param.custcategoryId.id}
+		</if>
+		<if
+			test="param != null and param.creditId != null and param.creditId.id != null">
+			and credit_id = #{param.creditId.id}
+		</if>
+		<if
+			test="param != null and param.satisfiedId != null and param.satisfiedId.id != null">
+			and satisfied_id = #{param.satisfiedId.id}
+		</if>
+		<if
+			test="param != null and param.address != null and param.address != &quot;&quot;">
+			and address like
+			concat(concat("%",#{param.address,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.postal != null and param.postal != &quot;&quot;">
+			and postal like concat(concat("%",#{param.postal,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.fax != null and param.fax != &quot;&quot;">
+			and fax like concat(concat("%",#{param.fax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.url != null and param.url != &quot;&quot;">
+			and url like concat(concat("%",#{param.url,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.legalPerson != null and param.legalPerson != &quot;&quot;">
+			and legal_person like
+			concat(concat("%",#{param.legalPerson,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.license != null and param.license != &quot;&quot;">
+			and license like
+			concat(concat("%",#{param.license,jdbcType=VARCHAR}),"%")
+		</if>
+		<if test="param != null and param.fund != 0.0">
+			and fund = #{param.fund,jdbcType=DOUBLE}
+		</if>
+		<if test="param != null and param.turnover != 0.0">
+			and turnover = #{param.turnover,jdbcType=DOUBLE}
+		</if>
+		<if
+			test="param != null and param.bank != null and param.bank != &quot;&quot;">
+			and bank like concat(concat("%",#{param.bank,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.bankNumber != null and param.bankNumber != &quot;&quot;">
+			and bank_number like
+			concat(concat("%",#{param.bankNumber,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.stateTax != null and param.stateTax != &quot;&quot;">
+			and state_tax like
+			concat(concat("%",#{param.stateTax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.landTax != null and param.landTax != &quot;&quot;">
+			and land_tax like
+			concat(concat("%",#{param.landTax,jdbcType=VARCHAR}),"%")
+		</if>
+		<if
+			test="param != null and param.custfromId != null and param.custfromId.id != null">
+			and custfrom_id = #{param.custfromId.id}
+		</if>
+		<if test="param != null and param.changes != null">
+			and changes = #{param.changes,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<delete id="deleteByCustomerIdList">
+		delete from customer
+		where customer_id in
+		<foreach collection="array" item="item" open="(" separator=","
+			close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="addCustomers">
+		insert into customer
+		(customer_id, name, contacts,
+		tel, user_id, custcategory_id,
+		credit_id,
+		satisfied_id, address,
+		postal, fax, url, legal_person,
+		license, fund,
+		turnover,
+		bank,
+		bank_number, state_tax,
+		land_tax, custfrom_id, changes
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(0,#{item.name},#{item.contacts},#{item.tel},#{item.user.id},#{item.custcategoryId.id},#{item.creditId.id},#{item.satisfiedId.id},#{item.address},#{item.postal},#{item.fax},#{item.url},#{item.legalPerson},#{item.license},#{item.fund},#{item.turnover},#{item.bank},#{item.bankNumber},#{item.stateTax},#{item.landTax},#{item.custfromId.id},#{item.changes})
+		</foreach>
+	</insert>
+
+</mapper>

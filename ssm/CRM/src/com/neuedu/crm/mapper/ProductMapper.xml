@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuedu.crm.mapper.ProductMapper">
+	<resultMap id="BaseResultMap" type="Product">
+		<id column="product_id" jdbcType="INTEGER" property="productId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="unit" jdbcType="VARCHAR" property="unit" />
+		<result column="price" jdbcType="DOUBLE" property="price" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+	</resultMap>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from product
+	</select>
+
+	<select id="findById" parameterType="int" resultMap="BaseResultMap">
+		select * from product
+		<where>
+			<if test="productId != null">
+				product_id = #{productId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+	<update id="editProduct" parameterType="Product">
+		update product
+		set
+		name = #{name,jdbcType=VARCHAR},
+		type = #{type,jdbcType=VARCHAR},
+		grade = #{grade,jdbcType=VARCHAR},
+		unit = #{unit,jdbcType=VARCHAR},
+		price = #{price,jdbcType=DOUBLE},
+		remark = #{remark,jdbcType=VARCHAR}
+		where
+		product_id = #{productId,jdbcType=INTEGER}
+	</update>
+
+	<insert id="addProduct" parameterType="Product">
+		insert into product
+		(product_id, name, type,
+		grade, unit, price,
+		remark)
+		values
+		(#{productId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR},
+		#{unit,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE},
+		#{remark,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteById">
+		delete from product
+		<where>
+			product_id=#{productId}
+		</where>
+	</delete>
+	
+	<sql id="Base_Column_List">
+		product_id, name, type, grade, unit, price, remark
+	</sql>
+	
+	<select id="findByExample" parameterType="Product" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from product
+		<where>
+			<if test="productId != null">
+				product_id like concat(concat("%",#{productId}),"%")
+			</if>
+			<if test="name != null and name != &quot;&quot;">
+				and name like concat(concat("%",#{name}),"%")
+			</if>
+			<if test="type != null and type != &quot;&quot;">
+				and type like concat(concat("%",#{type}),"%")
+			</if>
+			<if test="grade != null and grade != &quot;&quot;">
+				and grade like concat(concat("%",#{grade}),"%")
+			</if>
+			<if test="unit != null and unit != &quot;&quot;">
+				and unit like concat(concat("%",#{unit}),"%")
+			</if>
+			<if test="price != null and price != 0.0">
+				and price=#{price}
+			</if>
+			<if test="remark != null and remark != &quot;&quot;">
+				and remark like concat(concat("%",#{remark}),"%")
+			</if>
+		</where>
+		order by ${orderByClause}
+	</select>
+	
+	<select id="findByPager" parameterType="Pager" resultMap="BaseResultMap">
+		select * from product
+		<where>
+			<if test="productId != null">
+				product_id like concat(concat("%",#{productId}),"%")
+			</if>
+			<if test="name != null and name != &quot;&quot;">
+				and name like concat(concat("%",#{name}),"%")
+			</if>
+			<if test="type != null and type != &quot;&quot;">
+				and type like concat(concat("%",#{type}),"%")
+			</if>
+			<if test="grade != null and grade != &quot;&quot;">
+				and grade like concat(concat("%",#{grade}),"%")
+			</if>
+			<if test="unit != null and unit != &quot;&quot;">
+				and unit like concat(concat("%",#{unit}),"%")
+			</if>
+			<if test="price != null and price != 0.0">
+				and price=#{price}
+			</if>
+			<if test="remark != null and remark != &quot;&quot;">
+				and remark like concat(concat("%",#{remark}),"%")
+			</if>
+		</where>
+		limit #{startIndex},#{pageSize}
+	</select>
+	
+	<select id="countForPager" parameterType="Pager" resultType="int">
+		select count(product_id) from product
+		<where>
+			<if test="productId != null">
+				product_id like concat(concat("%",#{productId}),"%")
+			</if>
+			<if test="name != null and name != &quot;&quot;">
+				and name like concat(concat("%",#{name}),"%")
+			</if>
+			<if test="type != null and type != &quot;&quot;">
+				and type like concat(concat("%",#{type}),"%")
+			</if>
+			<if test="grade != null and grade != &quot;&quot;">
+				and grade like concat(concat("%",#{grade}),"%")
+			</if>
+			<if test="unit != null and unit != &quot;&quot;">
+				and unit like concat(concat("%",#{unit}),"%")
+			</if>
+			<if test="price != null and price != 0.0">
+				and price=#{price}
+			</if>
+			<if test="remark != null and remark != &quot;&quot;">
+				and remark like concat(concat("%",#{remark}),"%")
+			</if>
+		</where>
+	</select>
+
+</mapper>

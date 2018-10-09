@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.neuedu.crm.mapper.LogMapper">
+ 	<select id="findLogByExample" parameterType="Pager">
+ 		
+ 	</select>
+ 	<insert id="addLog" parameterType="Log">
+ 		insert into log
+ 		values(#{account},#{date},#{action},#{explains},#{tel})
+ 	</insert>
+ 	<sql id="find_pager_example">
+ 		<if test="param != null and param.account != null and param.account != ''">
+			and account like "%"#{param.account}"%"
+		</if>
+		<if test="param != null and param.action != null and param.action != ''">
+			and action like "%"#{param.action}"%"
+		</if>
+		<if test="param != null and param.explains != null and param.explains != ''">
+			and explains like "%"#{param.explains}"%"
+		</if>
+ 	</sql>
+ 	<select id="findPagerByExample" parameterType="Pager" resultType="log">
+		select account,date,action,explains,tel 
+		from log where 1=1
+		<include refid="find_pager_example"/>
+		limit #{startIndex}, #{pageSize}
+	</select>
+	
+	<select id="countForPager" parameterType="Pager" resultType="INTEGER">
+		select count(*) from log where 1=1
+		<include refid="find_pager_example"/>
+		
+	</select>
+ </mapper>
